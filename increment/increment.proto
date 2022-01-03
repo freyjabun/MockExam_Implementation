@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+package increment;
+option go_package = "https://example.com/;increment";
+
+service incrementService {
+    rpc increment (IncrementRequest) returns (IncrementReply) {}
+}
+
+message IncrementRequest {
+    int32 Value = 1;
+}
+
+message IncrementReply {
+    bool Success = 1;
+    int32 ValueBefore = 2;
+}
