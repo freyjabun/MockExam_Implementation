@@ -8,7 +8,7 @@ import (
 	"os"
 	"strconv"
 
-	incservice "example.com/increment"
+	pb "example.com/increment"
 	"google.golang.org/grpc"
 )
 
@@ -16,8 +16,8 @@ func main() {
 
 	fe := frontend{
 		ctx:      context.Background(),
-		repch:    make(chan incservice.IncrementReply),
-		replicas: make(map[int32]incservice.IncrementServiceClient),
+		repch:    make(chan pb.IncrementReply),
+		replicas: make(map[int32]pb.IncrementServiceClient),
 	}
 
 	for i := 5000; i < 5003; i++ {
@@ -28,7 +28,7 @@ func main() {
 			log.Fatalf("Did not connect: %v", err)
 		}
 		//defer conn.Close()
-		fe.replicas[int32(i)] = incservice.NewIncrementServiceClient(conn)
+		fe.replicas[int32(i)] = pb.NewIncrementServiceClient(conn)
 	}
 
 	fmt.Print("\n=== Welcome to the distributed incrementor ===\n\n╒═════════════════ COMMANDS ══════════════════╕\n│ Write the value you want your incrementor   │\n│ to have. You cannot set the incrementor to  │\n│ a lower value than it already is.           │\n│ Only positive integers are accepted.        │\n└─────────────────────────────────────────────┘\n\n")

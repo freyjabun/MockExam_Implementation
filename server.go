@@ -6,12 +6,12 @@ import (
 	"net"
 	"sync"
 
-	incservice "example.com/increment"
+	pb "example.com/increment"
 	"google.golang.org/grpc"
 )
 
 type server struct {
-	incservice.UnimplementedIncrementServiceServer
+	pb.UnimplementedIncrementServiceServer
 	inc incrementor
 }
 
@@ -33,17 +33,17 @@ func main() {
 
 	s := &server{inc: incrementor{currentValue: 0}}
 
-	incservice.RegisterIncrementServiceServer(grpcServer, s)
+	pb.RegisterIncrementServiceServer(grpcServer, s)
 	if err := grpcServer.Serve(lis); err != nil {
 		log.Fatalf("failed to server %v", err)
 	}
 }
 
-func (s *server) Increment(ctx context.Context, req *incservice.IncrementRequest) (*incservice.IncrementReply, error) {
+func (s *server) Increment(ctx context.Context, req *pb.IncrementRequest) (*pb.IncrementReply, error) {
 	s.inc.lock.Lock()
 	defer s.inc.lock.Unlock()
 
-	rep := &incservice.IncrementReply{ValueBefore: s.inc.currentValue}
+	rep := &pb.IncrementReply{ValueBefore: s.inc.currentValue}
 
 	if req.Value > s.inc.currentValue {
 		rep.Success = true

@@ -5,19 +5,19 @@ import (
 	"fmt"
 	"time"
 
-	incservice "example.com/increment"
+	pb "example.com/increment"
 )
 
 type frontend struct {
-	replicas map[int32]incservice.IncrementServiceClient
+	replicas map[int32]pb.IncrementServiceClient
 	ctx      context.Context
-	repch    chan incservice.IncrementReply
+	repch    chan pb.IncrementReply
 }
 
-func (fe *frontend) incrementReplica(req *incservice.IncrementRequest, c incservice.IncrementServiceClient) {
+func (fe *frontend) incrementReplica(req *pb.IncrementRequest, c pb.IncrementServiceClient) {
 	rep, err := c.Increment(fe.ctx, req)
 	if err != nil {
-		fe.repch <- incservice.IncrementReply{Success: false, ValueBefore: -1}
+		fe.repch <- pb.IncrementReply{Success: false, ValueBefore: -1}
 	} else {
 		fe.repch <- *rep
 	}
@@ -28,10 +28,10 @@ func (fe *frontend) increment(value int32) string {
 		return fmt.Sprint("You can't set a negative value.")
 	}
 
-	req := &incservice.IncrementRequest{
+	req := &pb.IncrementRequest{
 		Value: value,
 	}
-	var rep incservice.IncrementReply
+	var rep pb.IncrementReply
 
 incrementreplicas:
 	for k, v := range fe.replicas {
